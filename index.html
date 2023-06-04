@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://kit.fontawesome.com/8e1b73ffab.js" crossorigin="anonymous"></script>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:wght@400;500&display=swap" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/normalize-css@2.3.1/normalize.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="main.css">
+	<link rel="stylesheet" type="text/css" href="grid.css">
+	<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+	<title>Настеночек</title>
+</head>
+<body>
+	<div id="app">
+		<div class="top-navbar">
+			<div class="grid">
+				<div class="cell -3of12">{{ timeString }}</div>
+				<div class="cell -9of12 text-left"><i class="fa-solid fa-location-dot"></i> Buntown</div>
+			</div>
+		</div>
+		<div class="pin-code">
+			Введите PIN:
+			<div class="pincode-placeholder animate__animated" :class="{ 'animate__shakeX': wrongPinCode }">
+				<template v-for="(item, index) in pinCodeCircles">
+					<div class="pincode-circle animate__animated" :class="{ checked: item, 'animate__pulse': item }"></div>
+				</template>	
+			</div>
+			<div class="keyboard">
+				<div class="grid">
+					<template v-for="(item, index) in keyboard">
+						<div class="cell -4of12">
+							<div class="key" v-on:click="clickOnKeyboard(item, index)">{{ item }}</div>
+						</div>
+					</template>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		var app = new Vue(
+		{
+  			el: '#app',
+
+  			data: 
+  			{
+    			message: 'Hello Vue!',
+    			pinCodeCircles:
+    			[
+    				false,
+    				false,
+    				false,
+    				false
+    			],
+    			keyboard:
+    			[
+    				1,
+    				2,
+    				3,
+    				4,
+    				5,
+    				6,
+    				7,
+    				8,
+    				9
+    			],
+    			pinCodePosition: 0,
+    			pinCodeHash: '',
+    			rightPinCode: '0105',
+    			timeString: '',
+    			wrongPinCode: false,
+    			isInputBlocked: false,
+  			},
+  			methods:
+    		{
+    			clickOnKeyboard(item, index) 
+    			{
+    				if(this.isInputBlocked == true) return true;
+
+    				this.$set(this.pinCodeCircles, app.pinCodePosition, true);
+    				app.pinCodePosition++;
+   		 			app.pinCodeHash = app.pinCodeHash + item;
+   		 			console.log(app.pinCodeHash);
+   		 			if(app.pinCodePosition == 4)
+   		 			{
+   		 				if(this.pinCodeHash != this.rightPinCode)
+   		 				{
+   		 					this.wrongPinCode = true;
+   		 					this.isInputBlocked = true;
+   		 					setTimeout(() => 
+   		 						{
+   		 							this.wrongPinCode = false;
+   		 							this.isInputBlocked = false;
+   		 							app.pinCodePosition = 0;
+			   		 				this.$set(this.pinCodeCircles, 0, false);
+			   		 				this.$set(this.pinCodeCircles, 1, false);
+			   		 				this.$set(this.pinCodeCircles, 2, false);
+			   		 				this.$set(this.pinCodeCircles, 3, false);
+			   		 				app.pinCodeHash = '';
+   		 						}, 1000);
+   		 				}
+
+   		 			}
+    				
+  				},
+  				updateTime() 
+  				{
+				  var now = new Date();
+				  var hours = now.getHours();
+				  var minutes = now.getMinutes();
+				  var seconds = now.getSeconds();
+
+				  // Format hours, minutes, and seconds to have leading zeros if needed
+				  hours = hours.toString().padStart(2, '0');
+				  minutes = minutes.toString().padStart(2, '0');
+				  seconds = seconds.toString().padStart(2, '0');
+
+				  this.timeString = hours + ':' + minutes + ':' + seconds;
+				}
+    		},
+    		mounted: function ()
+  			{
+  				setInterval(this.updateTime, 1000);
+  			},
+		});
+	</script>
+</body>
+</html>
